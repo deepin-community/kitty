@@ -1,0 +1,2 @@
+# docs built with sphinx needs Built-Using set
+built-using-field-on-arch-all-package (in section for kitty-doc) Built-Using ${sphinxdoc:Built-Using}, *

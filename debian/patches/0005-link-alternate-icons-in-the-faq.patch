@@ -1,0 +1,71 @@
+From: Maytham Alsudany <maytha8thedev@gmail.com>
+Date: Fri, 10 Nov 2023 15:16:39 +0800
+Subject: Link alternate icons in the FAQ
+Forwarded: not-needed
+
+This eliminates a privacy breach by linking to the alternate icons rather than showing them to the user directly.
+---
+ docs/faq.rst | 35 +++++++----------------------------
+ 1 file changed, 7 insertions(+), 28 deletions(-)
+
+--- a/docs/faq.rst
++++ b/docs/faq.rst
+@@ -315,44 +315,21 @@
+ I do not like the kitty icon!
+ -------------------------------
+ 
+-There are many alternate icons available, click on an icon to visit its
+-homepage:
++There are many alternate icons available, refer to the below links:
+ 
+-.. image:: https://github.com/k0nserv/kitty-icon/raw/main/kitty.iconset/icon_256x256.png
+-   :target: https://github.com/k0nserv/kitty-icon
+-   :width: 256
+-
+-.. image:: https://github.com/DinkDonk/kitty-icon/raw/main/kitty-dark.png
+-   :target: https://github.com/DinkDonk/kitty-icon
+-   :width: 256
+-
+-.. image:: https://github.com/DinkDonk/kitty-icon/raw/main/kitty-light.png
+-   :target: https://github.com/DinkDonk/kitty-icon
+-   :width: 256
+-
+-.. image:: https://github.com/hristost/kitty-alternative-icon/raw/main/kitty_icon.png
+-   :target: https://github.com/hristost/kitty-alternative-icon
+-   :width: 256
+-
+-.. image:: https://github.com/igrmk/whiskers/raw/main/whiskers.svg
+-   :target: https://github.com/igrmk/whiskers
+-   :width: 256
+-
+-.. image:: https://github.com/samholmes/whiskers/raw/main/whiskers.png
+-   :target: https://github.com/samholmes/whiskers
+-   :width: 256
+-
+-.. image:: https://github.com/eccentric-j/eccentric-icons/raw/main/icons/kitty-terminal/2d/kitty-preview.png
+-   :target: https://github.com/eccentric-j/eccentric-icons
+-   :width: 256
+-
+-.. image:: https://github.com/eccentric-j/eccentric-icons/raw/main/icons/kitty-terminal/3d/kitty-preview.png
+-   :target: https://github.com/eccentric-j/eccentric-icons
+-   :width: 256
+-
+-.. image:: https://github.com/sodapopcan/kitty-icon/raw/main/kitty.app.png
+-   :target: https://github.com/sodapopcan/kitty-icon
+-   :width: 256
++* https://github.com/k0nserv/kitty-icon
++
++* https://github.com/DinkDonk/kitty-icon
++
++* https://github.com/hristost/kitty-alternative-icon
++
++* https://github.com/igrmk/whiskers
++
++* https://github.com/samholmes/whiskers
++
++* https://github.com/eccentric-j/eccentric-icons
++
++* https://github.com/sodapopcan/kitty-icon
+ 
+ On macOS and X11 you can put :file:`kitty.app.icns` (macOS only) or :file:`kitty.app.png` in the
+ :ref:`kitty configuration directory <confloc>`, and this icon will be applied

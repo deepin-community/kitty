@@ -1,0 +1,6 @@
+build/
+debian/fakehome/
+debian/fakeruntime/
+docs/_build/
+linux-package/
+vendor/

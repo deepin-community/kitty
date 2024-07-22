@@ -1,15 +1,125 @@
-Source: template-repository
-Section: unknown
+Source: kitty
 Priority: optional
-Maintainer: Tsic404 <liuheng@deepin.org>
-Build-Depends: debhelper (>= 11)
-Standards-Version: 4.1.3
-Homepage: https://github.com/deepin-community/template-repository
-#Vcs-Browser: https://salsa.debian.org/debian/deepin-community-template-repository
-#Vcs-Git: https://salsa.debian.org/debian/deepin-community-template-repository.git
+Maintainer: Nilesh Patra <nilesh@debian.org>
+Uploaders: Maytham Alsudany <maytha8thedev@gmail.com>
+Section: x11
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+XS-Go-Import-Path: kitty
+Homepage: https://sw.kovidgoyal.net/kitty/
+Vcs-Git: https://salsa.debian.org/debian/kitty.git
+Vcs-Browser: https://salsa.debian.org/debian/kitty
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-python,
+ dh-golang,
+ golang-any (>= 2:1.22~),
+ golang-github-altree-bigfloat-dev,
+ golang-github-alecthomas-chroma-v2-dev,
+ golang-github-bmatcuk-doublestar-dev (>= 4),
+# golang-github-disintegration-imaging-dev,
+ golang-github-dlclark-regexp2-dev,
+ golang-github-edwvee-exiffix-dev,
+ golang-github-google-go-cmp-dev,
+ golang-github-google-uuid-dev,
+ golang-github-seancfoley-ipaddress-go-dev,
+ golang-github-shirou-gopsutil-dev,
+ golang-github-zeebo-xxh3-dev,
+ golang-golang-x-exp-dev (>= 0.0~git20230801),
+ golang-golang-x-image-dev,
+ golang-golang-x-sys-dev,
+ golang-howett-plist-dev,
+ fish <!nocheck>,
+ furo <!nodoc>,
+ libdbus-1-dev,
+ libfontconfig-dev,
+ libfreetype-dev,
+ libgl-dev,
+ libglvnd-dev,
+ libharfbuzz-dev,
+ liblcms2-dev,
+ libpng-dev,
+ librsync-dev,
+ libsimde-dev,
+ libssl-dev,
+ libx11-xcb-dev,
+ libxcursor-dev,
+ libxi-dev,
+ libxinerama-dev,
+ libxkbcommon-x11-dev,
+ libxrandr-dev,
+ libxxhash-dev,
+ libwayland-dev [linux-any],
+ locales,
+ locales-all,
+ pkgconf,
+ python3-dev,
+ python3-pil <!nocheck>,
+ python3-sphinx <!nodoc>,
+ python3-sphinx-copybutton <!nodoc>,
+ python3-sphinx-inline-tabs <!nodoc>,
+ python3-sphinxext-opengraph <!nodoc>,
+ uthash-dev,
+ wayland-protocols [linux-any],
+ zlib1g-dev,
+ zsh <!nocheck>
 
-Package: template-repository
+Package: kitty
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends:
+ kitty-shell-integration,
+ kitty-terminfo,
+ ${misc:Depends},
+ ${python3:Depends},
+ ${shlibs:Depends},
+Recommends:
+ kitty-doc,
+# To play the "beep" sound for the terminal
+ libcanberra0
+Suggests:
+# For tui kitten
+ imagemagick,
+ fonts-noto-color-emoji
+Provides:
+ x-terminal-emulator
+Built-Using: ${misc:Built-Using},
+             ${simde:Built-Using}
+Description: fast, featureful, GPU based terminal emulator
+ Kitty supports modern terminal features like: graphics, unicode,
+ true-color, OpenType ligatures, mouse protocol, focus tracking, and
+ bracketed paste.
+ .
+ Kitty has a framework for "kittens", small terminal programs that can be used
+ to extend its functionality.
+
+Package: kitty-terminfo
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+Description: fast, featureful, GPU based terminal emulator (terminfo file)
+ This package provides the xterm-kitty terminfo definition for the kitty
+ terminal emulator so that it can easily be installed on remote systems.
+
+Package: kitty-shell-integration
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: fast, featureful, GPU based terminal emulator (shell integration files)
+ This package provides Kitty's shell-integration files so that it can easily
+ be installed on remote systems.
+
+Package: kitty-doc
+Architecture: all
+Multi-Arch: foreign
+Section: doc
+Built-Using:
+ ${sphinxdoc:Built-Using},
+Depends:
+ ${misc:Depends},
+ ${sphinxdoc:Depends},
+Description: fast, featureful, GPU based terminal emulator (documentation)
+ This package contains the AsciiDoc/HTML documentation for the kitty terminal
+ emulator.
