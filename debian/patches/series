@@ -1,0 +1,11 @@
+0001-use-usr-bin-env-in-shebang.patch
+0002-replace-changelog-commit-hashes-with-urls.patch
+0003-do-not-run-go-tests-from-python-testcode.patch
+0004-skip-TestHintMarking.patch
+0005-link-alternate-icons-in-the-faq.patch
+0006-remove-install-instructions.patch
+0007-link-intro-vid-instead-of-embedding.patch
+0008-link-graphics-protocol-image.patch
+0009-skip-two-tests-on-ppc64.patch
+0010-disable-kitten-update-self-command.patch
+0011-ignore-vendor-dir.patch

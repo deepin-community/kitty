@@ -1,4 +1,99 @@
 #!/usr/bin/make -f
+# vim: noexpandtab shiftwidth=4 softtabstop=0
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+include /usr/share/dpkg/default.mk
+
+OVERRIDE_CFLAGS = $(CFLAGS) -DSIMDE_ENABLE_OPENMP -fopenmp-simd -O3
+OVERRIDE_CPPFLAGS = $(CPPFLAGS)
+OVERRIDE_LDFLAGS = $(LDFLAGS)
+export OVERRIDE_CFLAGS OVERRIDE_CPPFLAGS OVERRIDE_LDFLAGS
+
+V=
+ifeq (,$(filter terse,$(DEB_BUILD_OPTIONS)))
+	V=--verbose
+endif
+
+HOME = $(CURDIR)/debian/fakehome
+KITTY_RUNTIME_DIRECTORY = $(CURDIR)/debian/fakeruntime
+
+SRCDIR = $(CURDIR)
+
+GOPATH = $(CURDIR)/_build
+GO_BUILDDIR = $(GOPATH)/src
+GO111MODULE = off
+export GOPATH GO111MODULE
+# export DH_GOLANG_INSTALL_EXTRA := gen-go-code.py terminfo shell-integration tools/unicode_names/names.txt
+# export DH_GOLANG_BUILDPKG := kitty/tools/cmd
+export DH_GOLANG_INSTALL_ALL := 1
 
 %:
-	dh $@
+	dh $@ --with python3 --with sphinxdoc
+
+override_dh_auto_clean:
+	python3 setup.py $(V) clean
+	dh_auto_clean --buildsystem=golang -O--builddirectory=_build
+
+override_dh_auto_configure:
+	cp -r $(CURDIR)/debian/vendor/ $(CURDIR)/
+	dh_auto_configure -O--with=python3 -O--with=sphinxdoc
+	dh_auto_configure -O--buildsystem=golang -O--builddirectory=_build
+
+override_dh_auto_build:
+	env HOME="$(HOME)" python3 setup.py $(V) linux-package --skip-building-kitten
+	cp $(CURDIR)/kitty/docs_ref_map_generated.h $(GO_BUILDDIR)/kitty/kitty
+	cp $(CURDIR)/kitty/uniforms_generated.h $(GO_BUILDDIR)/kitty/kitty
+	cd $(GO_BUILDDIR)/kitty && \
+		$(CURDIR)/linux-package/bin/kitty +launch gen/go_code.py
+	GOPATH="$(GOPATH)" go build -trimpath -v -ldflags '-s -w' -o $(CURDIR)/linux-package/bin/kitten kitty/tools/cmd
+	ln -s $(CURDIR)/linux-package/bin/kitten $(CURDIR)/kitty/launcher/kitten
+ifeq (,$(filter nodoc,$(DEB_BUILD_OPTIONS)))
+	$(MAKE) docs
+endif
+
+override_dh_auto_test:
+	mkdir -p "$(HOME)"
+	mkdir -p "$(KITTY_RUNTIME_DIRECTORY)"
+	# Run python tests
+	GOPATH="$(GOPATH)" HOME="$(HOME)" KITTY_RUNTIME_DIRECTORY="$(KITTY_RUNTIME_DIRECTORY)" python3 setup.py $(V) build-launcher --skip-building-kitten --skip-code-generation
+	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 GOPATH="$(GOPATH)" HOME="$(HOME)" KITTY_RUNTIME_DIRECTORY="$(KITTY_RUNTIME_DIRECTORY)" python3 setup.py $(V) test
+	# Run Golang tests
+	KITTY_PATH_TO_KITTY_EXE="$(CURDIR)/kitty/launcher/kitty" dh_auto_test -O--buildsystem=golang -O--builddirectory=_build
+	rm -f $(CURDIR)/kitty/launcher/kitten
+
+override_dh_auto_install:
+	mkdir -p $(CURDIR)/debian/tmp/usr
+	cp -a linux-package/* $(CURDIR)/debian/tmp/usr/
+	# Man pages
+	mkdir -p $(CURDIR)/debian/tmp/usr/share/man/man1
+	mkdir -p $(CURDIR)/debian/tmp/usr/share/man/man5
+	cp $(CURDIR)/docs/_build/man/*.1 $(CURDIR)/debian/tmp/usr/share/man/man1
+	cp $(CURDIR)/docs/_build/man/*.5 $(CURDIR)/debian/tmp/usr/share/man/man5
+	# HTML docs
+	mkdir -p $(CURDIR)/debian/tmp/usr/share/doc/kitty
+	cp -r $(CURDIR)/docs/_build/html $(CURDIR)/debian/tmp/usr/share/doc/kitty/html
+	# Replace shebangs in Python files
+	sed -i -e "s%#\!/usr/bin/env python$$%#\!/usr/bin/env python3%g" `find $(CURDIR)/debian/tmp/usr/lib/kitty -type f -name "*.py"`
+
+override_dh_install:
+	dh_install -Nkitty-shell-integration -Xlib/kitty/shell-integration
+	dh_install -pkitty-shell-integration
+
+override_dh_installdocs:
+	dh_installdocs
+	# Remove PayPal's tracking pixel
+	[ ! -d debian/kitty-doc ] || sed -i '/pixel\.gif/d' debian/kitty-doc/usr/share/doc/kitty/html/support.html
+
+override_dh_python3:
+	dh_python3 --no-ext-rename
+	dh_golang -O--buildsystem=golang -O--builddirectory=_build
+
+override_dh_installchangelogs:
+	dh_installchangelogs docs/changelog.rst
+
+override_dh_compress:
+	dh_compress -X/html
+
+override_dh_gencontrol:
+	dh_gencontrol -- -Vsimde:Built-Using="$(shell dpkg-query -f '$${source:Package} (= $${source:Version}), ' -W "libsimde-dev")"
